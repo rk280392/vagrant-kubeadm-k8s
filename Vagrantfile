@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "master-#{i}" do |master|
       master.vm.box = IMAGE
       master.vm.hostname = "master-#{i}"
-      master.vm.network "public_network", ip: "192.168.1.#{i+49}", use_dhcp_assigned_default_route: true, bridge: "enp19s0"
+      master.vm.network "public_network", ip: IP_NW + "#{IP_START}", use_dhcp_assigned_default_route: true, bridge: "enp19s0"
       master.vm.provision "shell", inline: $infoScript,
         run: "always"
       master.vm.provision "shell", path: "scripts/k8s-containerd-master.sh"
@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
      config.vm.define "worker-#{i}" do |worker|
         worker.vm.box = IMAGE
 	worker.vm.hostname = "worker-#{i}"
-	worker.vm.network "public_network", ip: "192.168.1.#{ i + 99 }", use_dhcp_assigned_default_route: true, bridge: "enp19s0"
+	worker.vm.network "public_network", ip: IP_NW + "#{IP_START_W}", use_dhcp_assigned_default_route: true, bridge: "enp19s0"
         worker.vm.provision "shell", path: "scripts/k8s-containerd-worker.sh"
         worker.vm.provider :virtualbox do |v|
           v.memory = 1024
