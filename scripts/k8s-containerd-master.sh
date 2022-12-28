@@ -64,29 +64,22 @@ sudo systemctl enable containerd
 sudo systemctl enable kubelet
 sudo systemctl restart kubelet
 
-sudo kubeadm init   --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=$MASTER_IP --apiserver-cert-extra-sans=$MASTER_IP  --upload-certs  --control-plane-endpoint=$LB_IP  --cri-socket unix:///var/run/containerd/containerd.sock --node-name="$NODENAME"
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-export KUBECONFIG=/etc/kubernetes/admin.conf
-
-#kubectl apply -f https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml
-#kubectl taint node $(hostname) node-role.kubernetes.io/control-plane:NoSchedule-
-#kubectl taint node $(hostname) node-role.kubernetes.io/master:NoSchedule-
-
-wget https://get.helm.sh/helm-v3.7.2-linux-amd64.tar.gz
-tar -xvf helm-v3.7.2-linux-amd64.tar.gz
-mv linux-amd64/helm /usr/local/bin/
-
-
-
 config_path="/vagrant/configs"
-
 if [ -d $config_path ]; then
   rm -f $config_path/*
 else
   mkdir -p $config_path
 fi
+
+sudo kubeadm init   --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=$MASTER_IP --apiserver-cert-extra-sans=$MASTER_IP  --upload-certs  --control-plane-endpoint=$LB_IP  --cri-socket unix:///var/run/containerd/containerd.sock --node-name="$NODENAME" &> $config_path/join-commands.txt
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+wget https://get.helm.sh/helm-v3.7.2-linux-amd64.tar.gz
+tar -xvf helm-v3.7.2-linux-amd64.tar.gz
+mv linux-amd64/helm /usr/local/bin/
 
 sudo cp -i /etc/kubernetes/admin.conf $config_path/config
 sudo touch $config_path/join.sh
@@ -94,15 +87,9 @@ sudo chmod +x $config_path/join.sh
 
 sudo kubeadm token create --print-join-command > $config_path/join.sh
 
-# Install Calico Network Plugin
-
-#curl https://docs.projectcalico.org/manifests/calico.yaml -O
-
-#kubectl apply -f calico.yaml
-
 # Install Metrics Server
 
 #kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
 helm repo add cilium https://helm.cilium.io/
-helm install cilium cilium/cilium --version 1.12.5 --namespace kube-system
+#helm install cilium cilium/cilium --version 1.12.5 --namespace kube-system --set k8sServiceHost=$LB --set k8sServicePort=6443

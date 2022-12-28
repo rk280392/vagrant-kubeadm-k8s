@@ -1,5 +1,5 @@
-N=0
-M=2
+N=1
+M=1
 IMAGE="bento/ubuntu-22.04"
 IP_NW="192.168.1."
 IP_START=50
@@ -32,8 +32,8 @@ Vagrant.configure("2") do |config|
         run: "always"
       master.vm.provision "shell", path: "scripts/k8s-containerd-master.sh"
       master.vm.provider :virtualbox do |v|
-        v.memory = 1000
-        v.cpus = 1
+        v.memory = 2000
+        v.cpus = 2
       end
     end
   end
@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
         worker.vm.box = IMAGE
 	worker.vm.hostname = "worker-#{i}"
 	worker.vm.network "public_network", ip: "192.168.1.#{ i + 99 }", use_dhcp_assigned_default_route: true, bridge: "enp19s0"
-  #      worker.vm.provision "shell", path: "scripts/k8s-containerd-worker.sh"
+        worker.vm.provision "shell", path: "scripts/k8s-containerd-worker.sh"
         worker.vm.provider :virtualbox do |v|
           v.memory = 1024
           v.cpus = 1
