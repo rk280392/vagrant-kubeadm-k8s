@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install haproxy
+      apt:
+        name: haproxy
+        state: latest
+        update_cache: yes
+    - name: Copy config.cfg
+      copy:
+        src: haproxy.cfg
+        dest: haproxy.cfg
+    - name: start the service
+      service:
+        name: haproxy
+        state: restarted
+
