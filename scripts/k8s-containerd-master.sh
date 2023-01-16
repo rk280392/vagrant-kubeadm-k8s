@@ -90,6 +90,5 @@ sudo kubeadm token create --print-join-command > $config_path/join.sh
 # Install Metrics Server
 
 #kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+#kubectl apply -f https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml
 
-helm repo add cilium https://helm.cilium.io/
-#helm install cilium cilium/cilium --version 1.12.5 --namespace kube-system --set k8sServiceHost=$LB --set k8sServicePort=6443

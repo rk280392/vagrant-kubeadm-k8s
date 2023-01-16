@@ -1,1 +1,4 @@
 .vagrant
+configs
+file.txt
+kube-flannel.yml
